@@ -1,0 +1,206 @@
+<html>
+	<header>
+			
+		<link rel="stylesheet" href="public/lib/codemirror.css">
+		<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+		<script src="public/lib/codemirror.js"></script>
+
+		<script src="public/mode/javascript/javascript.js"></script>
+		<script src="public/mode/css/css.js"></script>
+		<script src="public/external/jshint.js"></script>
+		<script src="public/external/jsonlint.js"></script>
+		<script src="public/external/csslint.js"></script>
+
+		<link rel="stylesheet" href="public/addon/lint/lint.css">
+		<script src="public/addon/lint/lint.js"></script>
+		<script src="public/addon/lint/javascript-lint.js"></script>
+		<script src="public/addon/lint/json-lint.js"></script>
+		<script src="public/addon/lint/css-lint.js"></script>
+
+		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+		<style>
+			textarea
+			{
+			  width:50%;
+			}
+			.textwrapper
+			{
+			  border:1px solid #999999;
+			  margin:5px 0;
+			  padding:3px;
+			}
+			table {
+	    		width:20%;
+			}
+			table, th, td {
+			    border: 1px solid black;
+			    border-collapse: collapse;
+			}
+			th, td {
+			    padding: 5px;
+			    text-align: left;
+			}
+			table tr:nth-child(even) {
+			    background-color: #eee;
+			}
+			table tr:nth-child(odd) {
+			   background-color:#fff;
+			}
+			table th	{
+			    background-color: black;
+			    color: white;
+			}
+			a.back-to-top {
+				display: none;
+				width: 60px;
+				height: 60px;
+				text-indent: -9999px;
+				position: fixed;
+				z-index: 999;
+				right: 20px;
+				bottom: 20px;
+				background: #27AE61 url("public/img/up-arrow.png") no-repeat center 43%;
+				-webkit-border-radius: 30px;
+				-moz-border-radius: 30px;
+				border-radius: 30px;
+			}
+			a:hover.back-to-top {
+				background-color: #000;
+			}
+		</style>
+
+		<script>
+			//Socket.io
+			var socket = io.connect();
+			socket.on('connect', function() {
+				console.log('connected');
+			});
+			socket.on('message', function(data) {
+				console.log(data);
+			});
+			socket.on('log_verbose', function(data) {
+				console.log("log_verbose : " + data);
+				document.getElementById("log").innerHTML+="<span style='color:blue'>" + data + "</span><br/>";
+				document.getElementById( 'bottom' ).scrollIntoView();
+			});
+			socket.on('log_error', function(data) {
+				console.log("log_error : " + data);
+				document.getElementById("log").innerHTML+="<span style='color:red'>" + data + "</span><br/>";
+				document.getElementById( 'bottom' ).scrollIntoView();
+			});
+			socket.on('log_info', function(data) {
+				console.log("log_info : " + data);
+				document.getElementById("log").innerHTML+="<span style='color:green'>" + data + "</span><br/>";
+				document.getElementById( 'bottom' ).scrollIntoView();
+			});
+		</script>
+	</header>
+
+	<body>
+
+		<input type="submit" value="START DOWNLOAD" onClick="startDownload();"/><br/><br/>
+
+		<table style="width:50%">
+			<tr>
+				<td>simultaneous download</td>
+				<td><input type="text" value="10" id="simultaneous_download" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input></td>
+			</tr>
+			<tr>
+				<td>attempts number</td>
+				<td><input type="text" value="2" id="attempts_number" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input></td>
+			</tr>
+			<tr>
+				<td>request timeout (ms)</td>
+				<td><input type="text" value="5000" id="request_timeout" onkeypress='return event.charCode >= 48 && event.charCode <= 57'></input></td>
+			</tr>
+		</table>
+		<br/>
+
+		<div style="display: block;" id="rulesformitem" class="formitem">
+			<label for="config" id="ruleslabel">JSON configuration : </label>
+			<textarea cols="2" rows="20" id="code-json">
+[{"url":"https://nodejs.org/dist/node-0.0.1.tar.gz","outputDirectory":"./output-test"},
+{"url":"https://nodejs.org/dist/node-0.0.2.tar.gz","outputDirectory":"./output-test"},
+{"url":"https://nodejs.org/dist/node-0.0.3.tar.gz","outputDirectory":"./output-test"},
+{"url":"https://nodejs.org/dist/node-0.0.4.tar.gz","outputDirectory":"./output-test"},
+{"url":"https://nodejs.org/dist/node-0.0.5.tar.gz","outputDirectory":"./output-test"},
+{"url":"https://nodejs.org/dist/node-0.0.6.tar.gz","outputDirectory":"./output-test"},
+{"url":"https://nodejs.org/dist/node-0.1.0.tar.gz","outputDirectory":"./output-test"},
+{"url":"https://nodejs.org/dist/node-0.1.1.tar.gz","outputDirectory":"./output-test"},
+{"url":"https://nodejs.org/dist/node-0.1.10.tar.gz","outputDirectory":"./output-test"},
+{"url":"https://nodejs.org/dist/node-0.1.11.tar.gz","outputDirectory":"./output-test"},
+{"url":"https://nodejs.org/dist/node-0.1.12.tar.gz","outputDirectory":"./output-test"},
+{"url":"https://nodejs.org/dist/node-0.1.13.tar.gz","outputDirectory":"./output-test"},
+{"url":"https://nodejs.org/dist/node-0.1.2.tar.gz","outputDirectory":"./output-test"}]
+			</textarea>
+		</div>
+		<div style="display: block;" id="rulesformitem2" class="formitem2">
+			<p>Server log : <input type="submit" value="clear" onClick="clearLog();"/></p>
+			<div id="log"></div>
+		</div>
+		<div id="bottom"></div>
+		<script>
+		  
+		  var editor_json = CodeMirror.fromTextArea(document.getElementById("code-json"), {
+		    lineNumbers: true,
+		    mode: "application/json",
+		    gutters: ["CodeMirror-lint-markers"],
+		    lint: true
+		  });
+
+		  function downloadReq(files,simultaneous_download,attempts_number,requestTimeout) {
+
+			  var xhttp = new XMLHttpRequest();
+
+			  xhttp.onreadystatechange = function() {
+			    if (xhttp.readyState == 4 && xhttp.status == 200) {
+			      alert(xhttp.responseText);
+			    }
+			  };
+			  var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
+		      xmlhttp.open("POST", "/startDownload");
+			  xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+			  xmlhttp.send(JSON.stringify({files:files,"simultaneous_download":simultaneous_download,"attempts_number":attempts_number,"requestTimeout":requestTimeout}));
+			}
+
+	 		function startDownload(){
+	 		if (document.getElementById("simultaneous_download").value<1){
+	 			alert("error : simultaneous download must be >= 1");
+	 		}
+	 		if (document.getElementById("attempts_number").value<0){
+	 			alert("error : attempts number must be >=0");
+	 		}
+	 		if (document.getElementById("request_timeout").value<=0){
+	 			alert("error : request timeout must be >0ms");
+	 		}
+	 		downloadReq(editor_json.getValue(),document.getElementById("simultaneous_download").value,document.getElementById("attempts_number").value,document.getElementById("request_timeout").value);
+	 	}
+	 		function clearLog(){
+				document.getElementById("log").innerHTML="";
+			}
+		</script>
+		<script type="text/javascript">
+			// create the back to top button
+			$('body').prepend('<a href="#" class="back-to-top">Back to Top</a>');
+
+			var amountScrolled = 300;
+
+			$(window).scroll(function() {
+				if ( $(window).scrollTop() > amountScrolled ) {
+					$('a.back-to-top').fadeIn('slow');
+				} else {
+					$('a.back-to-top').fadeOut('slow');
+				}
+			});
+
+			$('a.back-to-top, a.simple-back-to-top').click(function() {
+				$('html, body').animate({
+					scrollTop: 0
+				}, 700);
+				return false;
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,34 @@
+{
+  "name": "node-dlarchive-server",
+  "version": "0.0.1",
+  "description": "http/socket io server to download small/large amount of gzip tarball and unpack them",
+  "main": "application.js",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "colors": "^1.1.2",
+    "express": "^4.13.4",
+    "gunzip-maybe": "^1.3.1",
+    "node-tictoc": "^1.2.0",
+    "html": "^0.0.10",
+    "tar-fs": "^1.11.1",
+    "websocket": "^1.0.22",
+    "socket.io": "^1.4.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akinaru/node-dlarchive-server"
+  },
+  "keywords": [
+    "tar.gz",
+    "download"
+  ],
+  "author": "Bertrand Martel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/akinaru/node-dlarchive-server/issues"
+  }
+}
