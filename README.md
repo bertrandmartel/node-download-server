@@ -1,4 +1,4 @@
-# Node Archive Download server
+# Node tar.gz download server
 
 Experimental Node JS HTTP/Socket IO server to download small to large amount of tar.gz files and unpack these to a specific directory
 
@@ -12,6 +12,17 @@ This project features :
 * ability to define simultaneous download value, HTTP request timeout for each request, number of attempt for each url
 
 This cluster usage enables separation between process hungry untar/ungzip task from async task + webserver with zero down time
+
+## Run
+
+```
+git clone git://github.com/akinaru/node-targz-dlserver.git
+cd node-targz-dlserver
+npm install
+node application.js
+```
+
+check http://127.0.0.1:8000/ in a browser
 
 ## Architecture
 
