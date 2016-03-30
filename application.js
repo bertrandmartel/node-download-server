@@ -32,11 +32,13 @@ var http = require("http");
 var url = require("url");
 var async = require('async');
 var fs = require("fs");
+var path = require("path");
 var tar = require('tar-fs');
 var gunzip = require('gunzip-maybe');
 var colors = require('colors');
 var time = require('node-tictoc');
 var cluster = require('cluster');
+var S = require('string');
 
 /**
  * set color theme for log
@@ -57,13 +59,24 @@ colors.setTheme({
 /**
  * unarchive gzip + untar
  *
- * @param {string} path to tarball to unzip + untar
- * @param {string} the directory where tarball unarchived content will be put
+ * @param file {string} readstream for the file
+ * @param outputDir {string} the directory where tarball unarchived content will be put
  */
-function untar(file, outputDir) {
+function untargz(file, outputDir) {
 	file.pipe(gunzip()).pipe(tar.extract(outputDir)).on('error', function(e) {
 		console.log(colors.error(file.path + " : " + e));
 	});
+}
+
+/**
+ * copy a file to another directory
+ *
+ * @param filename {string} path to tar file
+ * @param file {string} readstream for the file
+ * @param outputDir {string} the directory
+ */
+function copy_to_dir(filename, file, outputDir) {
+	file.pipe(fs.createWriteStream(outputDir + "/" + path.basename(filename)));
 }
 
 /**
@@ -445,6 +458,8 @@ if (cluster.isMaster) {
 
 		if (message.type === 'untar') {
 
+			var ext = path.extname(message.data.filename);
+
 			//get file stream to be read from
 			var file = fs.createReadStream(message.data.filename);
 
@@ -472,8 +487,14 @@ if (cluster.isMaster) {
 				});
 			});
 
-			//untar+ungzip the tarball
-			untar(file, message.data.outputDir);
+			if (S(message.data.filename).endsWith(".tar.gz") || (ext == ".tgz")) {
+				//untar+ungzip the tarball
+				untargz(file, message.data.outputDir);
+			} else {
+				//copy file to output directory
+				copy_to_dir(message.data.filename, file, message.data.outputDir);
+			}
+
 		} else if (message.type === 'shutdown') {
 			// this is for exiting web worker properly
 			downloading = false;
