@@ -1,5 +1,5 @@
 {
-  "name": "node-targz-dlserver",
+  "name": "node-download-server",
   "version": "0.0.1",
   "description": "http/socket io server to download small/large amount of gzip tarball and unpack them",
   "main": "application.js",
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/akinaru/node-targz-dlserver"
+    "url": "https://github.com/akinaru/node-download-server"
   },
   "keywords": [
     "tar.gz",
@@ -28,6 +28,6 @@
   "author": "Bertrand Martel",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/akinaru/node-targz-dlserver/issues"
+    "url": "https://github.com/akinaru/node-download-server/issues"
   }
 }
