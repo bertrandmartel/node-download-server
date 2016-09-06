@@ -101,7 +101,7 @@ var MAX_RETRY = 2;
  * server port
  * @private
  */
-var PORT = 8000;
+var PORT = 80;
 
 /**
  * number of simultaneous download
