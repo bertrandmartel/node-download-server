@@ -16,7 +16,7 @@ This cluster usage enables separation between process hungry untar/ungzip task f
 ## Run
 
 ```
-git clone git://github.com/akinaru/node-targz-dlserver.git
+git clone git://github.com/bertrandmartel/node-download-server.git
 cd node-targz-dlserver
 npm install
 node application.js

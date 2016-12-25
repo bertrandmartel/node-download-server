@@ -21,12 +21,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/akinaru/node-download-server.git"
+    "url": "git+https://github.com/bertrandmartel/node-download-server.git"
   },
   "author": "Bertrand Martel",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/akinaru/node-download-server/issues"
+    "url": "https://github.com/bertrandmartel/node-download-server/issues"
   },
-  "homepage": "https://github.com/akinaru/node-download-server#readme"
+  "homepage": "https://github.com/bertrandmartel/node-download-server#readme"
 }
